@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include <string>
 
 const uint16_t bit_tripler[8] = {
   0b0000000000000000, 
