@@ -14,13 +14,11 @@ void MatrixDriver::setPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
     } 
     int index = (y * WIDTH) + x;
     framebuffer[index] = {r, g, b};
-
-
 }
 
 void MatrixDriver::show() {
     for(int y = 0; y < HEIGHT; y++) { 
-        byte row_data = 1 << (y + 4);
+        uint8_t row_data = 1 << (y + 4);
         uint16_t col_data = 0;
 
         for (int x = 0; x < WIDTH; x++) {
@@ -31,6 +29,9 @@ void MatrixDriver::show() {
         }
 
         uint16_t output = ~(row_data | col_data);
+
+        
+
         shift_and_latch(output);
         delayMicroseconds(100); 
     }
