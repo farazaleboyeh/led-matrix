@@ -1,8 +1,6 @@
 #include "master.h"
 
-const int latchp = 15;
-const int clockp = 17;
-const int datap = 7;
+MatrixDriver display;
 
 void setup()
 {
@@ -14,16 +12,18 @@ void setup()
 
   rgb_init();
   rgb_set_color("red");
+
+  display.setPixel(0, 0, 0b11111111, 0b11111111, 0b11111111);
+  display.show();
+  
 }
 
 void loop()
 {
- 
-  for(int i = 0; i < 3; i++){
-    for(int j = 0; j < 3; j++){
-      setPixel(i, j, true);
-      delay(1000);
-    }
-  }
-
+  // set_row(0, 0b010);
+  // delay(500);
+  // set_row(1, 0b101);
+  // delay(500);
+  // set_row(2, 0b111);
+  // delay(500);
 }

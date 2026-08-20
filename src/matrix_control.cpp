@@ -1,10 +1,42 @@
 #include "master.h"
 
-const int latchp = 15;
-const int clockp = 17;
-const int datap = 7;
+MatrixDriver::MatrixDriver() {
+    clear();
+}
 
-void shiftLED(uint16_t thisLED)
+void MatrixDriver::clear() {
+    memset(framebuffer, 0, sizeof(framebuffer));
+}
+
+void MatrixDriver::setPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
+    if(x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT){
+        return;
+    } 
+    int index = (y * WIDTH) + x;
+    framebuffer[index] = {r, g, b};
+
+
+}
+
+void MatrixDriver::show() {
+    for(int y = 0; y < HEIGHT; y++) { 
+        byte row_data = 1 << (y + 4);
+        uint16_t col_data = 0;
+
+        for (int x = 0; x < WIDTH; x++) {
+            int index = (y * WIDTH) + x;
+            if (framebuffer[index].r > 0 || framebuffer[index].g > 0 || framebuffer[index].b > 0) {
+                col_data |= (0b1110000000000000 >> (x * 3)); 
+            }
+        }
+
+        uint16_t output = ~(row_data | col_data);
+        shift_and_latch(output);
+        delayMicroseconds(100); 
+    }
+}
+
+void shift_and_latch(uint16_t thisLED)
 {
     byte highByte = (thisLED >> 8) & 0xFF; // Top 8 bits
     byte lowByte = thisLED & 0xFF;         // Bottom 8 bits
@@ -15,25 +47,44 @@ void shiftLED(uint16_t thisLED)
     digitalWrite(latchp, HIGH); // Copies shifted data to output pins Q0–Q7
 }
 
-void setPixel(int x, int y, bool state)
+void set_led(int x, int y, bool state)
 {
     if(x < 0 || x > 2 || y < 0 || y > 2){
         return;
     }
 
     if(!state){
-        shiftLED(0xFFFF);
+        shift_and_latch(0xFFFF);
         return;
     }
 
-    byte rowData = 1 << (y + 4);
-    uint16_t colData = 0b1110000000000000 >> x * 3;
-    //Serial.println(std::bitset<8>(rowData).to_string().c_str());
-    //Serial.println(std::bitset<16>(colData).to_string().c_str());
+    byte row_data = 1 << (y + 4);
+    uint16_t col_data = 0b1110000000000000 >> x * 3;
+    
+    uint16_t output = ~(row_data | col_data);
+    shift_and_latch(output);
+}
 
-    uint16_t output = ~(colData | rowData);
+void simple_led_cycle(){
+    for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 3; j++){
+            set_led(i, j, true);
+            delay(500);
+        }
+    }
+}
 
-    //Serial.println(std::bitset<16>(output).to_string().c_str());
+void set_row(int y, uint8_t row_pattern)
+{
+    if(y < 0 || y > 2){
+        return;
+    }
 
-    shiftLED(output);
+    uint8_t row_data = 1 << (y + 4);
+    uint16_t col_data = bit_tripler[row_pattern & 0b111];
+    
+    uint16_t output = ~(row_data | col_data);
+    shift_and_latch(output);
+
+
 }
