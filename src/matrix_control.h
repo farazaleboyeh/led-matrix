@@ -26,12 +26,18 @@ private:
     static const int WIDTH = 3;
     static const int HEIGHT = 3;
     static const int NUM_PIXELS = WIDTH * HEIGHT;
-    RGB framebuffer[NUM_PIXELS];
+
+    RGB framebuffer_a[NUM_PIXELS];
+    RGB framebuffer_b[NUM_PIXELS];
+
+    RGB* draw_buffer;
+    RGB* show_buffer;
 public:
     MatrixDriver();
     void clear();  
-    void setPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-    void show();   
+    void set_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
+    void scan_matrix();   
+    void swap();
 };
 
 void shift_and_latch(uint16_t thisLED);

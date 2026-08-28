@@ -8,3 +8,4 @@ include/
 test/
 lib/
 extra.txt
+secrets.ini

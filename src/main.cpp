@@ -20,31 +20,12 @@ void setup()
 
 void loop()
 {
-  // display.setPixel(0, 0, 0b11111111, 0b11111111, 0b11111111);
-  // display.show();
+  display.clear();
+  display.set_pixel(0, 0, 0b11111111, 0b11111111, 0b1111111);
   
-  for(int i = 0; i < 3; i++){
-    for(int j = 0; j < 3; j++){
-      display.setPixel(j, i, 0b11111111, 0b11111111, 0);
-      display.show();
-      // delay(500);
-      display.setPixel(j, i, 0, 0b11111111, 0b11111111);
-      display.show();
-      // delay(500);
-      display.setPixel(j, i, 0b11111111, 0, 0b11111111);
-      display.show();
-      // delay(500);
-    
-      // delay(500);
-      display.clear();
-    }
-  }
+  display.swap();
 
-  
-  // set_row(0, 0b010);
-  // delay(500);
-  // set_row(1, 0b101);
-  // delay(500);
-  // set_row(2, 0b111);
-  // delay(500);
+  for(int i = 0; i < 50; i++) {
+        display.scan_matrix(); 
+  }
 }
