@@ -11,47 +11,65 @@ void MatrixDriver::clear(){
 }
 
 void MatrixDriver::set_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b){
-    if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT){
+    if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
+    {
         return;
     }
     int index = (y * WIDTH) + x;
     draw_buffer[index] = {r, g, b};
 }
 
-void MatrixDriver::scan_matrix(){
-    for (int y = 0; y < HEIGHT; y++)
-    {
+void MatrixDriver::scan() {
+    for (int y = 0; y < HEIGHT; y++) {
+        
         uint16_t row_data = 0b1000000000000000 >> (9 + y);
-        uint16_t col_data = 0;
-
-        for (int x = 0; x < WIDTH; x++){
-            int index = (y * WIDTH) + x;
-            if (show_buffer[index].r > 0){
-                col_data |= (0b1000000000000000 >> (x * 3));
-            }
-            if (show_buffer[index].g > 0){
-                col_data |= (0b0100000000000000 >> (x * 3));
-            }
-            if (show_buffer[index].b > 0){
-                col_data |= (0b0010000000000000 >> (x * 3));
-            }
+        
+        for(int bit = 0; bit < 8; bit++) {
+            
+            uint16_t col_data = bitplanes[y][bit];
+            uint16_t output = ~(row_data | col_data);
+            
+            shift_and_latch(output);
+        
+            int delayTime = (1 << bit) * 5; 
+            
+            delayMicroseconds(delayTime);
         }
-
-        uint16_t output = ~(row_data | col_data);
-
-        // std::string bitString = std::bitset<16>(output).to_string();
-        // Serial.println(bitString.c_str());
-
-        shift_and_latch(output);
-        delayMicroseconds(300);
-        // delayMicroseconds(200);
+        
+        shift_and_latch(0xFFFF); // remove?
     }
 }
 
-void MatrixDriver::swap() {
-    RGB* temp = show_buffer;
+void MatrixDriver::unpack_bitplanes(){
+    for (int y = 0; y < HEIGHT; y++)
+    {
+        for (int bit = 0; bit < 8; bit++) {
+            uint16_t col_data = 0;
+
+            for (int x = 0; x < WIDTH; x++)
+            {
+                int index = (y * WIDTH) + x;
+                if (show_buffer[index].r & (1 << bit)) {
+                    col_data |= (0b1000000000000000 >> (x * 3));
+                }
+                if (show_buffer[index].g & (1 << bit)) {
+                    col_data |= (0b0100000000000000 >> (x * 3));
+                }
+                if (show_buffer[index].b & (1 << bit)) {
+                    col_data |= (0b0010000000000000 >> (x * 3));
+                }
+            }
+            bitplanes[y][bit] = col_data;
+        }
+    }
+}
+
+void MatrixDriver::swap(){
+    RGB *temp = show_buffer;
     show_buffer = draw_buffer;
     draw_buffer = temp;
+
+    unpack_bitplanes();
 }
 
 void shift_and_latch(uint16_t thisLED){
@@ -83,7 +101,8 @@ void set_led(int x, int y, bool state){
     shift_and_latch(output);
 }
 
-void simple_led_cycle(){
+void simple_led_cycle()
+{
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++)
@@ -94,7 +113,8 @@ void simple_led_cycle(){
     }
 }
 
-void set_row(int y, uint8_t row_pattern){
+void set_row(int y, uint8_t row_pattern)
+{
     if (y < 0 || y > 2)
     {
         return;

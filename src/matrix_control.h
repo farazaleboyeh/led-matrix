@@ -32,12 +32,15 @@ private:
 
     RGB* draw_buffer;
     RGB* show_buffer;
+
+    uint16_t bitplanes[HEIGHT][8]; 
 public:
     MatrixDriver();
     void clear();  
     void set_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-    void scan_matrix();   
+    void scan();   
     void swap();
+    void unpack_bitplanes();
 };
 
 void shift_and_latch(uint16_t thisLED);
