@@ -31,12 +31,12 @@ void MatrixDriver::scan() {
             
             shift_and_latch(output);
         
-            int delayTime = (1 << bit) * 5; 
+            int delay_time = (1 << bit) * 5; 
             
-            delayMicroseconds(delayTime);
+            delayMicroseconds(delay_time);
         }
         
-        shift_and_latch(0xFFFF); // remove?
+        shift_and_latch(0xFFFF);
     }
 }
 
@@ -49,13 +49,13 @@ void MatrixDriver::unpack_bitplanes(){
             for (int x = 0; x < WIDTH; x++)
             {
                 int index = (y * WIDTH) + x;
-                if (show_buffer[index].r & (1 << bit)) {
+                if (show_buffer[index].r & (1 << bit)){
                     col_data |= (0b1000000000000000 >> (x * 3));
                 }
-                if (show_buffer[index].g & (1 << bit)) {
+                if (show_buffer[index].g & (1 << bit)){
                     col_data |= (0b0100000000000000 >> (x * 3));
                 }
-                if (show_buffer[index].b & (1 << bit)) {
+                if (show_buffer[index].b & (1 << bit)){
                     col_data |= (0b0010000000000000 >> (x * 3));
                 }
             }
@@ -72,7 +72,7 @@ void MatrixDriver::swap(){
     unpack_bitplanes();
 }
 
-void shift_and_latch(uint16_t thisLED){
+void MatrixDriver::shift_and_latch(uint16_t thisLED){
     byte highByte = (thisLED >> 8) & 0xFF; // Top 8 bits
     byte lowByte = thisLED & 0xFF;         // Bottom 8 bits
     digitalWrite(latchp, LOW);             // Prevents output changes while shifting data
@@ -82,47 +82,56 @@ void shift_and_latch(uint16_t thisLED){
     digitalWrite(latchp, HIGH); // Copies shifted data to output pins Q0–Q7
 }
 
-void set_led(int x, int y, bool state){
-    if (x < 0 || x > 2 || y < 0 || y > 2)
-    {
-        return;
-    }
-
-    if (!state)
-    {
-        shift_and_latch(0xFFFF);
-        return;
-    }
-
-    uint16_t row_data = 0b1000000000000000 >> (9 + y);
-    uint16_t col_data = 0b1110000000000000 >> x * 3;
-
-    uint16_t output = ~(row_data | col_data);
-    shift_and_latch(output);
+int MatrixDriver::get_HEIGHT(){
+    return HEIGHT;
 }
 
-void simple_led_cycle()
-{
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = 0; j < 3; j++)
-        {
-            set_led(i, j, true);
-            delay(500);
-        }
-    }
-}
+// uint16_t MatrixDriver::get_bitplanes(){
+//     return bitplanes;
+// }
 
-void set_row(int y, uint8_t row_pattern)
-{
-    if (y < 0 || y > 2)
-    {
-        return;
-    }
 
-    uint8_t row_data = 1 << (y + 4);
-    uint16_t col_data = bit_tripler[row_pattern & 0b111];
+// void set_led(int x, int y, bool state){
+//     if (x < 0 || x > 2 || y < 0 || y > 2)
+//     {
+//         return;
+//     }
 
-    uint16_t output = ~(row_data | col_data);
-    shift_and_latch(output);
-}
+//     if (!state)
+//     {
+//         shift_and_latch(0xFFFF);
+//         return;
+//     }
+
+//     uint16_t row_data = 0b1000000000000000 >> (9 + y);
+//     uint16_t col_data = 0b1110000000000000 >> x * 3;
+
+//     uint16_t output = ~(row_data | col_data);
+//     shift_and_latch(output);
+// }
+
+// void simple_led_cycle()
+// {
+//     for (int i = 0; i < 3; i++)
+//     {
+//         for (int j = 0; j < 3; j++)
+//         {
+//             set_led(i, j, true);
+//             delay(500);
+//         }
+//     }
+// }
+
+// void set_row(int y, uint8_t row_pattern)
+// {
+//     if (y < 0 || y > 2)
+//     {
+//         return;
+//     }
+
+//     uint8_t row_data = 1 << (y + 4);
+//     uint16_t col_data = bit_tripler[row_pattern & 0b111];
+
+//     uint16_t output = ~(row_data | col_data);
+//     shift_and_latch(output);
+// }

@@ -33,17 +33,20 @@ private:
     RGB* draw_buffer;
     RGB* show_buffer;
 
-    uint16_t bitplanes[HEIGHT][8]; 
+    
 public:
+    uint16_t bitplanes[HEIGHT][8]; 
     MatrixDriver();
     void clear();  
     void set_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
     void scan();   
     void swap();
     void unpack_bitplanes();
+    void shift_and_latch(uint16_t thisLED);
+    int get_HEIGHT();
+    // uint16_t get_bitplanes();
 };
 
-void shift_and_latch(uint16_t thisLED);
 void set_led(int x, int y, bool state);
 void simple_led_cycle(void);
 void set_row(int y, uint8_t row_pattern);
