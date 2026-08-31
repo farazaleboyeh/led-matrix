@@ -2,6 +2,7 @@
 
 MatrixDriver display;
 hw_timer_t *timer = NULL;
+WiFiMulti wifiMulti;
 
 volatile int current_row = 0;
 volatile int current_bit = 0;
@@ -41,8 +42,20 @@ void setup()
   pinMode(datap, OUTPUT);
 
   rgb_init();
-  rgb_set_color("red"); 
+  rgb_set_color("white"); 
+  
+  wifiMulti.addAP(WIFI_SSID1, WIFI_PASSWORD1);
 
+  while (wifiMulti.run() != WL_CONNECTED){
+    delay(100);
+  }
+
+  if(WiFi.status() == WL_CONNECTED){
+      rgb_set_color("green");
+    }else{
+      rgb_set_color("red");
+    }
+  
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, &on_timer, true);
   timerAlarmWrite(timer, 10, true);

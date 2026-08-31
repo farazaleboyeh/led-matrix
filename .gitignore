@@ -8,4 +8,4 @@ include/
 test/
 lib/
 extra.txt
-secrets.ini
+src/secrets.h
