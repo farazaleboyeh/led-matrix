@@ -86,6 +86,10 @@ int MatrixDriver::get_HEIGHT(){
     return HEIGHT;
 }
 
+int MatrixDriver::get_WIDTH(){
+    return WIDTH;
+}
+
 // uint16_t MatrixDriver::get_bitplanes(){
 //     return bitplanes;
 // }

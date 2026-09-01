@@ -23,8 +23,8 @@ struct RGB {
 
 class MatrixDriver {
 private: 
-    static const int WIDTH = 3;
-    static const int HEIGHT = 3;
+    static const int WIDTH = 2;
+    static const int HEIGHT = 2;
     static const int NUM_PIXELS = WIDTH * HEIGHT;
 
     RGB framebuffer_a[NUM_PIXELS];
@@ -44,6 +44,7 @@ public:
     void unpack_bitplanes();
     void shift_and_latch(uint16_t thisLED);
     int get_HEIGHT();
+    int get_WIDTH();
     // uint16_t get_bitplanes();
 };
 
