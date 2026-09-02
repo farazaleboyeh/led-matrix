@@ -1,16 +1,19 @@
 #include "master.h"
 
-MatrixDriver::MatrixDriver(){
+MatrixDriver::MatrixDriver()
+{
     draw_buffer = framebuffer_a;
     show_buffer = framebuffer_b;
     clear();
 }
 
-void MatrixDriver::clear(){
+void MatrixDriver::clear()
+{
     memset(draw_buffer, 0, NUM_PIXELS * sizeof(RGB));
 }
 
-void MatrixDriver::set_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b){
+void MatrixDriver::set_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b)
+{
     if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
     {
         return;
@@ -19,43 +22,51 @@ void MatrixDriver::set_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b){
     draw_buffer[index] = {r, g, b};
 }
 
-void MatrixDriver::scan() {
-    for (int y = 0; y < HEIGHT; y++) {
-        
+void MatrixDriver::scan()
+{
+    for (int y = 0; y < HEIGHT; y++)
+    {
+
         uint16_t row_data = 0b1000000000000000 >> (9 + y);
-        
-        for(int bit = 0; bit < 8; bit++) {
-            
+
+        for (int bit = 0; bit < 8; bit++)
+        {
+
             uint16_t col_data = bitplanes[y][bit];
             uint16_t output = ~(row_data | col_data);
-            
+
             shift_and_latch(output);
-        
-            int delay_time = (1 << bit) * 5; 
-            
+
+            int delay_time = (1 << bit) * 5;
+
             delayMicroseconds(delay_time);
         }
-        
+
         shift_and_latch(0xFFFF);
     }
 }
 
-void MatrixDriver::unpack_bitplanes(){
+void MatrixDriver::unpack_bitplanes()
+{
     for (int y = 0; y < HEIGHT; y++)
     {
-        for (int bit = 0; bit < 8; bit++) {
+        for (int bit = 0; bit < 8; bit++)
+        {
             uint16_t col_data = 0;
 
             for (int x = 0; x < WIDTH; x++)
             {
                 int index = (y * WIDTH) + x;
-                if (show_buffer[index].r & (1 << bit)){
+                if (show_buffer[index].r & (1 << bit))
+                {
                     col_data |= (0b1000000000000000 >> (x * 3));
                 }
-                if (show_buffer[index].g & (1 << bit)){
+                if (show_buffer[index].g & (1 << bit))
+                {
                     col_data |= (0b0100000000000000 >> (x * 3));
                 }
-                if (show_buffer[index].b & (1 << bit)){
+                if (show_buffer[index].b & (1 << bit))
+                {
                     col_data |= (0b0010000000000000 >> (x * 3));
                 }
             }
@@ -64,7 +75,8 @@ void MatrixDriver::unpack_bitplanes(){
     }
 }
 
-void MatrixDriver::swap(){
+void MatrixDriver::swap()
+{
     RGB *temp = show_buffer;
     show_buffer = draw_buffer;
     draw_buffer = temp;
@@ -72,7 +84,8 @@ void MatrixDriver::swap(){
     unpack_bitplanes();
 }
 
-void MatrixDriver::shift_and_latch(uint16_t thisLED){
+void MatrixDriver::shift_and_latch(uint16_t thisLED)
+{
     byte highByte = (thisLED >> 8) & 0xFF; // Top 8 bits
     byte lowByte = thisLED & 0xFF;         // Bottom 8 bits
     digitalWrite(latchp, LOW);             // Prevents output changes while shifting data
@@ -82,18 +95,19 @@ void MatrixDriver::shift_and_latch(uint16_t thisLED){
     digitalWrite(latchp, HIGH); // Copies shifted data to output pins Q0–Q7
 }
 
-int MatrixDriver::get_HEIGHT(){
+int MatrixDriver::get_HEIGHT()
+{
     return HEIGHT;
 }
 
-int MatrixDriver::get_WIDTH(){
+int MatrixDriver::get_WIDTH()
+{
     return WIDTH;
 }
 
 // uint16_t MatrixDriver::get_bitplanes(){
 //     return bitplanes;
 // }
-
 
 // void set_led(int x, int y, bool state){
 //     if (x < 0 || x > 2 || y < 0 || y > 2)

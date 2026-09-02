@@ -37,6 +37,10 @@ void IRAM_ATTR on_timer()
 
 bool tjpg_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap)
 {
+  Serial.print("width of current decoded pixel block in pixel units");
+  Serial.println(std::bitset<16>(w).to_string().c_str());
+  Serial.print("height of current decoded pixel block in pixel units");
+  Serial.println(std::bitset<16>(h).to_string().c_str());
   for (int j = 0; j < h; j++)
   {
     for (int i = 0; i < w; i++)
@@ -47,10 +51,20 @@ bool tjpg_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap)
       if (px < 2 && py < 2)
       {
         uint16_t color = bitmap[j * w + i];
+        Serial.println("---");
+        Serial.println(std::bitset<16>(color).to_string().c_str());
 
         uint8_t r = ((color >> 11) & 0x1F) << 3;
         uint8_t g = ((color >> 5) & 0x3F) << 2;
         uint8_t b = (color & 0x1F) << 3;
+
+        
+        Serial.println(px);
+        Serial.println(py);
+        Serial.println(std::bitset<8>(r).to_string().c_str());
+        Serial.println(std::bitset<8>(g).to_string().c_str());
+        Serial.println(std::bitset<8>(b).to_string().c_str());
+        
 
         display.set_pixel(px, py, r, g, b);
       }
@@ -94,7 +108,7 @@ void setup()
   refresh_access_token();
 
   TJpgDec.setJpgScale(8);         
-  TJpgDec.setSwapBytes(true);       
+  TJpgDec.setSwapBytes(false);       
   TJpgDec.setCallback(tjpg_output);
 }
 
@@ -118,7 +132,7 @@ void setup()
 // }
 
 unsigned long last_spotify_check = 0;
-const unsigned long SPOTIFY_POLL_INTERVAL = 5000;
+const unsigned long SPOTIFY_POLL_INTERVAL = 2000;
 
 void loop()
 {
@@ -132,7 +146,7 @@ void loop()
     }
     else
     {
-      wifiMulti.run(); // Attempt reconnect
+      wifiMulti.run(); 
     }
   }
 }

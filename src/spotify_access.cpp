@@ -79,20 +79,20 @@ int retrieve_artwork_url()
     Serial.print("Artwork HTTP Response Code: ");
     Serial.println(httpCode); 
 
-    if (httpCode == 200)
+    if (httpCode == HTTP_CODE_OK)
     {
         String payload = http.getString();
         DynamicJsonDocument doc(4096);
         deserializeJson(doc, payload);
         
-        Serial.println(doc["is_playing"].as<bool>());
-        Serial.println(doc["item"]["album"]["images"].as<bool>());
+        // Serial.println(doc["is_playing"].as<bool>());
+        // Serial.println(doc["item"]["album"]["images"].as<bool>());
 
         if (doc["is_playing"] && doc["item"]["album"]["images"])
         {
             
             const char *image_url = doc["item"]["album"]["images"][2]["url"];
-            Serial.print("hey");
+            // Serial.print("hey");
             Serial.println(image_url);
             download_artwork(image_url);
         }
@@ -109,30 +109,32 @@ void download_artwork(const char *image_url)
     client.setInsecure();
 
     HTTPClient http;
-    if (http.begin(client, image_url))
+    if (http.begin(client, image_url)) //method parses the url into its components (protocol - https, host - i.scdn.co, port - 443, & path). returns true/false
     {
         int httpCode = http.GET();
-        if (httpCode == HTTP_CODE_OK)
+        if (httpCode == HTTP_CODE_OK) 
         {
-            int total_size = http.getSize();
-            WiFiClient *stream = http.getStreamPtr();
-            uint8_t* jpg_buffer = (uint8_t *)malloc(total_size);
+            int total_size = http.getSize(); //Content-Length header returned by server
+            Serial.println(total_size);
+
+            WiFiClient *stream = http.getStreamPtr(); //obtain direct pointer to underlying TCP receive stream for raw byte level reading
+            uint8_t* jpg_buffer = (uint8_t *)malloc(total_size); //dynamically allocates a continous block of heap memory the size of total_size
             if (jpg_buffer)
             {
                 int bytes_read = 0;
                 while (http.connected() && (bytes_read < total_size)){
-                    size_t available = stream->available();
-                    if (available)
+                    size_t available = stream->available(); //checks how many bytes are currently waiting in the ESP32's network hardware buffer.
+                    if (available)  
                     {
-                        bytes_read += stream->readBytes(jpg_buffer + bytes_read, available);
+                        bytes_read += stream->readBytes(jpg_buffer + bytes_read, available); //read up to available bytes directly into memory location offset by bytes_read
                     }
                 }
-                delay(1);
+                delay(1); 
             }
             display.clear();
-            TJpgDec.drawJpg(0, 0, jpg_buffer, total_size);
-            display.swap();
-            free(jpg_buffer);
+            TJpgDec.drawJpg(0, 0, jpg_buffer, total_size); //passes downloaded raw JPEG byte array to decoder. decoder uncompresses each block and sends pixel coordinates and rgb values to tjpg_output callback function
+            display.swap(); 
+            free(jpg_buffer); //releases allocated memory back to heap to prevent memory leaks 
         }
     }
 }
