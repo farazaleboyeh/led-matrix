@@ -5,6 +5,7 @@ const int DATA_PIN  = datap;
 const int CLOCK_PIN = clockp;  
 const int LATCH_PIN = latchp;  
 
+//receives 5 bytes (1 per shift register)
 void send_raw(uint8_t b1, uint8_t b2, uint8_t b3, uint8_t b4, uint8_t b5)
 {
     digitalWrite(LATCH_PIN, LOW);
@@ -42,7 +43,7 @@ void loop()
     send_raw(0x00, 0x00, 0x00, 0x00, 0x00);
     delay(2000);
 
-    Serial.println("Pushing ALL 0xFF...");
-    send_raw(0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-    delay(2000);
+    // Serial.println("Pushing ALL 0xFF...");
+    // send_raw(0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+    // delay(2000);
 }
