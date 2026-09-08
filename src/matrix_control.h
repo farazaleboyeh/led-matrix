@@ -6,46 +6,71 @@
 #include <iostream>
 #include <string>
 
-const uint16_t bit_tripler[8] = {
-  0b0000000000000000, 
-  0b0000001110000000, 
-  0b0001110000000000, 
-  0b0001111110000000, 
-  0b1110000000000000, 
-  0b1110001110000000,
-  0b1111110000000000,
-  0b1111111110000000 
+struct SubPixel {
+    uint8_t byte_idx;
+    uint8_t bit;
 };
 
-struct RGB {
+struct PinLocation {
+    SubPixel r;
+    SubPixel g;
+    SubPixel b;
+};
+
+struct RowLocation {
+    uint8_t byte_idx;
+    uint8_t bit; 
+};
+
+static const PinLocation COL_MAP[10] = {
+    { {0, 6}, {0, 5}, {0, 4} },
+    { {0, 3}, {0, 2}, {0, 1} },
+    { {1, 0}, {0, 7}, {1, 6} },
+    { {1, 5}, {1, 4}, {1, 3} },
+    { {1, 2}, {1, 1}, {1, 0} },
+    { {1, 7}, {2, 6}, {2, 5} },
+    { {2, 4}, {2, 3}, {2, 2} },
+    { {2, 1}, {2, 0}, {2, 7} },
+    { {3, 6}, {2, 5}, {2, 4} },
+    { {3, 3}, {3, 1}, {3, 1} }
+};
+
+static const RowLocation ROW_MAP[10] = {
+    {3, 0}, {3, 7},                      
+    {4, 6}, {4, 5}, {4, 4}, {4, 3}, {4, 2}, {4, 1}, {4, 0}, {4, 7}          
+};
+
+struct RGB
+{
     uint8_t r, g, b;
 };
 
-class MatrixDriver {
-private: 
-    static const int WIDTH = 2;
-    static const int HEIGHT = 2;
+class MatrixDriver
+{
+private:
+    static const int WIDTH = 10;
+    static const int HEIGHT = 10;
     static const int NUM_PIXELS = WIDTH * HEIGHT;
+    static const int SHIFT_REGISTERS = 5;
 
     RGB framebuffer_a[NUM_PIXELS];
     RGB framebuffer_b[NUM_PIXELS];
 
-    RGB* draw_buffer;
-    RGB* show_buffer;
+    RGB *draw_buffer;
+    RGB *show_buffer;
 
-    
 public:
-    uint16_t bitplanes[HEIGHT][8]; 
+    uint8_t bitplanes[HEIGHT][8][SHIFT_REGISTERS];
     MatrixDriver();
-    void clear();  
+    void begin();
+    void clear();
     void set_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-    void scan();   
+    void scan();
     void swap();
     void unpack_bitplanes();
-    void shift_and_latch(uint16_t thisLED);
+    void shift_and_latch(const uint8_t* data, size_t len);
     int get_HEIGHT();
     int get_WIDTH();
-    // uint16_t get_bitplanes();
 };
 
 void set_led(int x, int y, bool state);
