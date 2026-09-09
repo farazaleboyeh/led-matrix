@@ -9,17 +9,18 @@ const int LATCH_PIN = latchp;
 void send_raw(uint8_t b1, uint8_t b2, uint8_t b3, uint8_t b4, uint8_t b5)
 {
     digitalWrite(LATCH_PIN, LOW);
-  
-    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, b1);
-    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, b2);
-    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, b3);
-    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, b4);
+
     shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, b5);
+    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, b4);
+    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, b3);
+    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, b2);
+    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, b1);
     
     digitalWrite(LATCH_PIN, HIGH);
-    delayMicroseconds(10);
     digitalWrite(LATCH_PIN, LOW);
 }
+
+// 0b 7 6 5 4 3 2 1 0
 
 void setup()
 {
@@ -34,16 +35,11 @@ void setup()
     digitalWrite(CLOCK_PIN, LOW);
     digitalWrite(DATA_PIN, LOW);
 
-    Serial.println("--- Bit-Bang Sanity Test Starting ---");
+    delay(2000);
 }
 
 void loop()
 {
-    Serial.println("Pushing ALL 0x00...");
-    send_raw(0x00, 0x00, 0x00, 0x00, 0x00);
-    delay(2000);
-
-    // Serial.println("Pushing ALL 0xFF...");
-    // send_raw(0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-    // delay(2000);
+  send_raw(0b01110011, 0b11111111, 0b11111111, 0b11111101, 0b11111111);
+  delay(500);
 }
