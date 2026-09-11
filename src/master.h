@@ -6,8 +6,8 @@
 // const int clockp = 17;
 // const int datap = 7;
 
-const int latchp = 47;
-const int clockp = 48;
+const int latchp = 48;
+const int clockp = 47;
 const int datap = 45;
 
 #include "matrix_control.h"

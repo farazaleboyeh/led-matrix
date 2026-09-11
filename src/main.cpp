@@ -13,19 +13,23 @@ void IRAM_ATTR on_timer()
 
   display.shift_and_latch(frame_data, 5);
 
-  int next_delay = (1 << current_bit) * 30;
-  timerAlarmWrite(timer, next_delay, true);
+    int next_delay = (1 << current_bit) * 5; 
+  timerAlarmWrite(timer, next_delay, false);
+  timerWrite(timer, 0);       // Reset counter back to zero
+  timerAlarmEnable(timer);    // Arm for the new duration
 
   current_bit++;
   if (current_bit >= 8)
   {
     current_bit = 0;
     current_row++;
-    if (current_row >= 10) 
+    if (current_row >= 10)
     {
       current_row = 0;
     }
   }
+
+
 }
 
 bool tjpg_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap)
@@ -71,23 +75,16 @@ void setup()
 
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, &on_timer, true);
-  timerAlarmWrite(timer, 10, true);
+  timerAlarmWrite(timer, 50, false); // Just the initial kick-off duration
   timerAlarmEnable(timer);
 
-  // refresh_access_token();
+    // refresh_access_token();
 
   // TJpgDec.setJpgScale(8);
   // TJpgDec.setSwapBytes(false);
   // TJpgDec.setCallback(tjpg_output);
-  
-  display.clear();
-  // display.swap();
 
-  // for(int i = 0; i < 10; i++){
-  //   for(int j = 0; j < 10; j++){
-  //     display.set_pixel(i, j, 255, 255, 255);
-  //   }
-  // }
+  display.clear();
   display.swap();
 }
 
@@ -96,48 +93,21 @@ int current_frame = 0;
 
 void loop()
 {
-  uint8_t t1[5] = {0x00, 0x00, 0x00, 0x00, 0x00};
-    display.shift_and_latch(t1, 5);
-    Serial.println("Test 1: All 0x00");
-    delay(2000);
-
-    // 2. All 0xFF (3.3V on all pins)
-    uint8_t t2[5] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-    display.shift_and_latch(t2, 5);
-    Serial.println("Test 2: All 0xFF");
-    delay(2000);
-
-    // 3. Columns 0xFF, Rows 0x00
-    // (SR1-SR3 = 0xFF, SR4 cols=0xFF & rows=0x00 -> 0xFC, SR5 rows=0x00)
-    uint8_t t3[5] = {0xFF, 0xFF, 0xFF, 0xFC, 0x00};
-    display.shift_and_latch(t3, 5);
-    Serial.println("Test 3: Cols 1, Rows 0");
-    delay(2000);
-
-    // 4. Columns 0x00, Rows 0xFF
-    // (SR1-SR3 = 0x00, SR4 cols=0x00 & rows=0x01 -> 0x03, SR5 rows=0xFF)
-    uint8_t t4[5] = {0x00, 0x00, 0x00, 0x03, 0xFF};
-    display.shift_and_latch(t4, 5);
-    Serial.println("Test 4: Cols 0, Rows 1");
-    delay(2000);
-  // if (millis() - last_frame_time >= 1000)
-  // {
-  //   last_frame_time = millis();
-  //   if (current_frame == 0)
-  //   {
-  //     Serial.println("Frame 0");
-  //     display.set_pixel(2, 2, 255, 255, 255);
-  //     current_frame = 1;
-  //   }
-  //   else
-  //   {
-  //     Serial.println("Frame 1");
-  //     display.set_pixel(0, 1, 255, 255, 255);
-  //     current_frame = 0;
-  //   }
-  //   display.swap();
-  // }
-  // display.clear();
+if (millis() - last_frame_time >= 1000) {
+        
+        last_frame_time = millis(); 
+        
+        display.clear();
+        if (current_frame == 0) {
+            display.set_pixel(0, 0, 255, 0, 0); 
+            current_frame = 1;
+        } else {
+            display.set_pixel(3, 3, 0, 0, 255); 
+            current_frame = 0;
+        }
+        display.swap();
+    }
+  
 }
 
 // unsigned long last_spotify_check = 0;

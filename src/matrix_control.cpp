@@ -25,7 +25,7 @@ void MatrixDriver::begin()
     SPI.begin(clockp, -1, datap, -1);
 
     // 3. Set bus speed to 10 MHz, MSB first, Mode 0
-    SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));
+    // SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));
 
     // 4. Clear all internal memory buffers
     memset(draw_buffer, 0, NUM_PIXELS * sizeof(RGB));
@@ -36,9 +36,9 @@ void MatrixDriver::begin()
     static const uint8_t blank[5] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     shift_and_latch(blank, 5);
 
-    #ifdef oep
+#ifdef oep
     digitalWrite(oep, LOW); // Enable outputs now that registers are zeroed
-    #endif
+#endif
 }
 
 void MatrixDriver::clear()
@@ -55,11 +55,11 @@ void MatrixDriver::set_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b)
     int index = (y * WIDTH) + x;
     draw_buffer[index] = {r, g, b};
 
-    Serial.println(index);
-    Serial.println(std::bitset<8>(r).to_string().c_str());
-    Serial.println(std::bitset<8>(g).to_string().c_str());
-    Serial.println(std::bitset<8>(b).to_string().c_str());
-    Serial.println("---");
+    // Serial.println(index);
+    // Serial.println(std::bitset<8>(r).to_string().c_str());
+    // Serial.println(std::bitset<8>(g).to_string().c_str());
+    // Serial.println(std::bitset<8>(b).to_string().c_str());
+    // Serial.println("---");
 }
 
 void MatrixDriver::scan()
@@ -80,46 +80,55 @@ void MatrixDriver::scan()
 
 void MatrixDriver::unpack_bitplanes()
 {
+    
     for (int y = 0; y < HEIGHT; y++)
     {
+        Serial.print("column:  ");
+                Serial.println(y);
+        
+        // Serial.println(y);
         for (int bit = 0; bit < 8; bit++)
         {
-            memset(bitplanes[y][bit], 0, 5); // clear all 5 bytes for this row & BCM slice
+            Serial.print("bit: ");
+                Serial.println(bit);
+            // Serial.println(bit);
+            memset(bitplanes[y][bit], 0, 5); // clear all 5 bytes for this row & BCM slice (facilitates bitwise or later)
 
             for (int x = 0; x < WIDTH; x++)
             {
+                Serial.print("row: ");
+                Serial.println(x);
+                // Serial.println(x);
                 int index = (y * WIDTH) + x;
-    
+
                 RGB p = show_buffer[index];
 
+                // loc is a 'reference', not a pointer (const ref.)
                 const PinLocation &loc = COL_MAP[x];
 
                 if (p.r & (1 << bit))
                 {
-                    bitplanes[y][bit][loc.r.byte_idx] |= (1 << (7 - loc.r.bit));
+                    // bitplanes[row][color depth slice][shift register]
+                    bitplanes[y][bit][loc.r.byte_idx] |= (1 << loc.r.bit);
                 }
 
                 if (p.g & (1 << bit))
                 {
-                    bitplanes[y][bit][loc.g.byte_idx] |= (1 << (7 - loc.g.bit));
+                    bitplanes[y][bit][loc.g.byte_idx] |= (1 << loc.g.bit);
                 }
 
                 if (p.b & (1 << bit))
                 {
-                    bitplanes[y][bit][loc.b.byte_idx] |= (1 << (7 - loc.b.bit));
+                    bitplanes[y][bit][loc.b.byte_idx] |= (1 << loc.b.bit);
                 }
-
-
-          
             }
             const RowLocation &rloc = ROW_MAP[y];
-            bitplanes[y][bit][rloc.byte_idx] |= (1 << (7 - rloc.bit));
+            bitplanes[y][bit][rloc.byte_idx] |= (1 << rloc.bit);
             bitplanes[y][bit][rloc.byte_idx] = ~(bitplanes[y][bit][rloc.byte_idx]);
 
             Serial.println(std::bitset<8>(bitplanes[y][bit][rloc.byte_idx]).to_string().c_str());
-            
         }
-        Serial.println("-----");
+        Serial.println("ROW-----");
     }
 }
 
@@ -134,7 +143,14 @@ void MatrixDriver::swap()
 
 void MatrixDriver::shift_and_latch(const uint8_t *data, size_t len)
 {
-    SPI.writeBytes(data, len);
+    SPI.beginTransaction(SPISettings(10000000, LSBFIRST, SPI_MODE0));
+    for (int i = len - 1; i >= 0; i--)
+    {
+        SPI.transfer(data[i]);
+    }
+
+    SPI.endTransaction();
+
     digitalWrite(latchp, HIGH);
     digitalWrite(latchp, LOW);
 }
