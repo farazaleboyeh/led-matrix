@@ -9,41 +9,30 @@ MatrixDriver::MatrixDriver()
 
 void MatrixDriver::begin()
 {
-    // 1. Configure the Latch Pin
-    // pinMode(latchp, OUTPUT);
     digitalWrite(latchp, LOW);
 
-    // // Optional: If you connected 74HC595 OE pin to a GPIO, hold it HIGH (disabled)
-    // // during boot to prevent bright flashes before data is loaded.
     // #ifdef oep
     // pinMode(oep, OUTPUT);
     // digitalWrite(oep, HIGH);
     // #endif
 
-    // 2. Map SPI to YOUR hardware pins: SPI.begin(SCK, MISO, MOSI, SS)
-    // -1 means the pin is unused by our shift registers
     SPI.begin(clockp, -1, datap, -1);
 
-    // 3. Set bus speed to 10 MHz, MSB first, Mode 0
-    // SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));
-
-    // 4. Clear all internal memory buffers
     memset(draw_buffer, 0, NUM_PIXELS * sizeof(RGB));
     memset(show_buffer, 0, NUM_PIXELS * sizeof(RGB));
     memset(bitplanes, 0, sizeof(bitplanes));
 
-    // 5. Shift out a blank frame to turn off all LEDs cleanly at boot
     static const uint8_t blank[5] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     shift_and_latch(blank, 5);
 
-#ifdef oep
-    digitalWrite(oep, LOW); // Enable outputs now that registers are zeroed
-#endif
+    // #ifdef oep
+    //     digitalWrite(oep, LOW); // Enable outputs now that registers are zeroed
+    // #endif
 }
 
 void MatrixDriver::clear()
 {
-    memset(draw_buffer, 0xFF, NUM_PIXELS * sizeof(RGB));
+    memset(draw_buffer, 0, NUM_PIXELS * sizeof(RGB));
 }
 
 void MatrixDriver::set_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b)
@@ -62,73 +51,63 @@ void MatrixDriver::set_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b)
     // Serial.println("---");
 }
 
-void MatrixDriver::scan()
+void MatrixDriver::scan(uint32_t duration_ms)
 {
-    static const uint8_t blank[5] = {0x00, 0x00, 0x00, 0x00, 0x00};
+    static const uint8_t blank[5] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
-    for (int y = 0; y < 10; y++)
+    uint32_t start = millis();
+    while (millis() - start < duration_ms)
     {
-        for (int bit = 0; bit < 8; bit++)
+        for (int y = 0; y < 10; y++)
         {
-            shift_and_latch(bitplanes[y][bit], 5);
-            int delay_time = (1 << bit) * 5;
-            delayMicroseconds(delay_time);
+            for (int bit = 0; bit < 8; bit++)
+            {
+                shift_and_latch(bitplanes[y][bit], 5);
+                int delay_time = (1 << bit) * 5; 
+                delayMicroseconds(delay_time);
+              
+            }
+            shift_and_latch(blank, 5);
         }
-        shift_and_latch(blank, 5);
     }
 }
 
 void MatrixDriver::unpack_bitplanes()
 {
-    
     for (int y = 0; y < HEIGHT; y++)
     {
-        Serial.print("column:  ");
-                Serial.println(y);
-        
-        // Serial.println(y);
         for (int bit = 0; bit < 8; bit++)
         {
-            Serial.print("bit: ");
-                Serial.println(bit);
-            // Serial.println(bit);
-            memset(bitplanes[y][bit], 0, 5); // clear all 5 bytes for this row & BCM slice (facilitates bitwise or later)
+            memset(bitplanes[y][bit], 0xFF, 5); // clear all 5 bytes for this row & BCM slice (facilitates bitwise or later)
 
             for (int x = 0; x < WIDTH; x++)
             {
-                Serial.print("row: ");
-                Serial.println(x);
-                // Serial.println(x);
                 int index = (y * WIDTH) + x;
-
                 RGB p = show_buffer[index];
-
-                // loc is a 'reference', not a pointer (const ref.)
                 const PinLocation &loc = COL_MAP[x];
 
                 if (p.r & (1 << bit))
                 {
-                    // bitplanes[row][color depth slice][shift register]
-                    bitplanes[y][bit][loc.r.byte_idx] |= (1 << loc.r.bit);
+                    bitplanes[y][bit][loc.r.byte_idx] &= ~(1 << loc.r.bit);
+                    
                 }
 
                 if (p.g & (1 << bit))
                 {
-                    bitplanes[y][bit][loc.g.byte_idx] |= (1 << loc.g.bit);
+                    bitplanes[y][bit][loc.g.byte_idx] &= ~(1 << loc.g.bit);
                 }
 
                 if (p.b & (1 << bit))
                 {
-                    bitplanes[y][bit][loc.b.byte_idx] |= (1 << loc.b.bit);
+                    bitplanes[y][bit][loc.b.byte_idx] &= ~(1 << loc.b.bit);
                 }
             }
             const RowLocation &rloc = ROW_MAP[y];
-            bitplanes[y][bit][rloc.byte_idx] |= (1 << rloc.bit);
-            bitplanes[y][bit][rloc.byte_idx] = ~(bitplanes[y][bit][rloc.byte_idx]);
-
-            Serial.println(std::bitset<8>(bitplanes[y][bit][rloc.byte_idx]).to_string().c_str());
+            // Serial.println(std::bitset<8>(bitplanes[y][bit][rloc.byte_idx]).to_string().c_str());
+            bitplanes[y][bit][rloc.byte_idx] &= ~(1 << rloc.bit);
+            // Serial.println(std::bitset<8>(bitplanes[y][bit][rloc.byte_idx]).to_string().c_str());
+            // Serial.println("---");
         }
-        Serial.println("ROW-----");
     }
 }
 
@@ -143,7 +122,7 @@ void MatrixDriver::swap()
 
 void MatrixDriver::shift_and_latch(const uint8_t *data, size_t len)
 {
-    SPI.beginTransaction(SPISettings(10000000, LSBFIRST, SPI_MODE0));
+    SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));
     for (int i = len - 1; i >= 0; i--)
     {
         SPI.transfer(data[i]);

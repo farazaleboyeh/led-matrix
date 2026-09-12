@@ -6,39 +6,39 @@
 #include <iostream>
 #include <string>
 
-struct SubPixel {
+struct SubPixel
+{
     uint8_t byte_idx;
     uint8_t bit;
 };
 
-struct PinLocation {
+struct PinLocation
+{
     SubPixel r;
     SubPixel g;
     SubPixel b;
 };
 
-struct RowLocation {
+struct RowLocation
+{
     uint8_t byte_idx;
-    uint8_t bit; 
+    uint8_t bit;
 };
 
 static const PinLocation COL_MAP[10] = {
-    { {0, 7}, {0, 6}, {0, 5} },
-    { {0, 4}, {0, 3}, {0, 2} },
-    { {1, 1}, {0, 0}, {1, 7} },
-    { {1, 6}, {1, 5}, {1, 4} },
-    { {1, 3}, {1, 2}, {1, 1} },
-    { {1, 0}, {2, 7}, {2, 6} },
-    { {2, 5}, {2, 4}, {2, 3} },
-    { {2, 2}, {2, 1}, {2, 0} },
-    { {3, 7}, {2, 6}, {2, 5} },
-    { {3, 4}, {3, 3}, {3, 2} }
-};
+    {{0, 7}, {0, 6}, {0, 5}},
+    {{0, 4}, {0, 3}, {0, 2}},
+    {{0, 1}, {0, 0}, {1, 7}},
+    {{1, 6}, {1, 5}, {1, 4}},
+    {{1, 3}, {1, 2}, {1, 1}},
+    {{1, 0}, {2, 7}, {2, 6}},
+    {{2, 5}, {2, 4}, {2, 3}},
+    {{2, 2}, {2, 1}, {2, 0}},
+    {{3, 7}, {3, 6}, {3, 5}},
+    {{3, 4}, {3, 3}, {3, 2}}};
 
 static const RowLocation ROW_MAP[10] = {
-    {3, 1}, {3, 0},                      
-    {4, 7}, {4, 6}, {4, 5}, {4, 4}, {4, 3}, {4, 2}, {4, 1}, {4, 0}          
-};
+    {3, 1}, {3, 0}, {4, 7}, {4, 6}, {4, 5}, {4, 4}, {4, 3}, {4, 2}, {4, 1}, {4, 0}};
 
 struct RGB
 {
@@ -65,10 +65,10 @@ public:
     void begin();
     void clear();
     void set_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-    void scan();
+    void scan(uint32_t duration_ms);
     void swap();
     void unpack_bitplanes();
-    void shift_and_latch(const uint8_t* data, size_t len);
+    void shift_and_latch(const uint8_t *data, size_t len);
     int get_HEIGHT();
     int get_WIDTH();
 };

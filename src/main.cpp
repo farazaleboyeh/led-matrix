@@ -10,7 +10,6 @@ volatile int current_bit = 0;
 void IRAM_ATTR on_timer()
 {
   uint8_t *frame_data = display.bitplanes[current_row][current_bit];
-
   display.shift_and_latch(frame_data, 5);
 
     int next_delay = (1 << current_bit) * 5; 
@@ -73,10 +72,10 @@ void setup()
 
   display.begin();
 
-  timer = timerBegin(0, 80, true);
-  timerAttachInterrupt(timer, &on_timer, true);
-  timerAlarmWrite(timer, 50, false); // Just the initial kick-off duration
-  timerAlarmEnable(timer);
+  // timer = timerBegin(0, 80, true);
+  // timerAttachInterrupt(timer, &on_timer, true);
+  // timerAlarmWrite(timer, 50, false); // Just the initial kick-off duration
+  // timerAlarmEnable(timer);
 
     // refresh_access_token();
 
@@ -93,22 +92,51 @@ int current_frame = 0;
 
 void loop()
 {
-if (millis() - last_frame_time >= 1000) {
+// if (millis() - last_frame_time >= 1000) {
         
-        last_frame_time = millis(); 
+//         last_frame_time = millis(); 
         
-        display.clear();
-        if (current_frame == 0) {
-            display.set_pixel(0, 0, 255, 0, 0); 
-            current_frame = 1;
-        } else {
-            display.set_pixel(3, 3, 0, 0, 255); 
-            current_frame = 0;
-        }
-        display.swap();
+//         display.clear();
+//         if (current_frame == 0) {
+//             display.set_pixel(0, 0, 255, 0, 0); 
+//             current_frame = 1;
+//         } else {
+//             display.set_pixel(7, 3, 0, 0, 255); 
+//             current_frame = 0;
+//         }
+//         display.swap();
+//     }
+
+  for(int i = 0; i < 10; i++){
+    for(int j = 0; j < 10; j++){
+      display.clear();
+      display.set_pixel(j, i, 255, 255, 255); 
+
+      display.swap();
+      display.scan(200);
     }
-  
+  }
 }
+
+//   uint8_t *frame_data = display.bitplanes[current_row][current_bit];
+
+//   Serial.print("Row ");
+//   Serial.print(current_row);
+//   Serial.print(" Bit ");
+//   Serial.print(current_bit);
+//   Serial.print(": ");
+
+//   for (int i = 0; i < 5; i++)
+//   {
+//       // Print in binary format with leading zeros padded
+//       for (int b = 7; b >= 0; b--)
+//       {
+//           Serial.print((frame_data[i] >> b) & 1);
+//       }
+//       Serial.print(" ");
+//   }
+//   Serial.println(); 
+// }
 
 // unsigned long last_spotify_check = 0;
 // const unsigned long SPOTIFY_POLL_INTERVAL = 2000;
