@@ -8,7 +8,6 @@ const char *refreshToken = SPOTIFY_REFRESH_TOKEN;
 
 String accessToken = "";
 
-
 void refresh_access_token()
 {
     HTTPClient http;
