@@ -1,2 +1,2 @@
-![alt text](assets/pcb.png)
 ![alt text](assets/schematic.png)
+![alt text](assets/pcb.png)
