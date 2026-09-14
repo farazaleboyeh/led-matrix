@@ -1,4 +1,4 @@
-# ESP32 Music Display
+# Custom-Built Music Display
 
 Repository includes the firmwmare used to display the artwork of a currently streaming song from Spotify onto a custom-built 10x10 display, as well as all primary KiCad project files used to design the display itself. 
 
