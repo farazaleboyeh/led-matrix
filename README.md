@@ -45,7 +45,7 @@ The display is driven by an ESP32 microcontroller, which is responsible for stre
 <div align="center">
   <img src="assets/sequence_diagram.png" alt="Image of UML Sequence Diagram" width="600" />
   <br />
-  <sub><i>UML sequence diagram, of the complete program flow.</i></sub>
+  <sub><i>UML sequence diagram, complete program flow.</i></sub>
 </div>
 
 ### API Access
