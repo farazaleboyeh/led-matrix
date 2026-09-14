@@ -35,7 +35,7 @@ The display is driven by an ESP32 microcontroller, which is responsible for stre
 <div align="center">
   <img src="assets/soldered.png" alt="Image of Soldered PCB" width="600" />
   <br />
-  <sub><i>Soldered PCB, note that the breakout is still the missing screws and washers necessary for securing it to the board but is otherwise complete.</i></sub>
+  <sub><i>Soldered PCB, note that the breakout is still missing the screws and washers necessary for securing it to the board but is otherwise complete.</i></sub>
 </div>
 
 
