@@ -8,3 +8,5 @@ secrets.h
 spotify.md
 uml.drawio
 sequence-diagram.drawio
+*.bkp
+*.dtmp
