@@ -18,7 +18,6 @@ The display is driven by an ESP32 microcontroller, which is responsible for stre
 
 <div align="center">
   <img src="assets/schematic.png" alt="Image of KiCad Schematic" width="600" />
-
   <sub><i>Schematic diagram, designed in KiCad.</i></sub>
 </div>
 
@@ -26,7 +25,6 @@ The display is driven by an ESP32 microcontroller, which is responsible for stre
 
 <div align="center">
   <img src="assets/pcb.png" alt="Image of KiCad PCB Layout" width="600" />
-  <br />
   <sub><i>PCB layout, designed in KiCad.</i></sub>
 </div>
 
@@ -34,7 +32,6 @@ The display is driven by an ESP32 microcontroller, which is responsible for stre
 
 <div align="center">
   <img src="assets/soldered.png" alt="Image of Soldered PCB" width="600" />
-  <br />
   <sub><i>Soldered PCB, note that the breakout is still missing the screws and washers necessary for securing it to the board but is otherwise complete.</i></sub>
 </div>
 
