@@ -18,9 +18,15 @@ The display is driven by an ESP32 microcontroller, which is responsible for stre
 
 ![Image of KiCad Schematic](assets/schematic.png)
 
+*KiCad Schematic*
+
 ![Image of KiCad PCB Layout](assets/pcb.png)
 
+*KiCad PCB Layout*
+
 ![Image of Soldered PCB](assets/soldered.png)
+
+*Soldered PCB, note that the breakout is still missing the screws and washers intended to secure it to the board*
 
 ## Firmware 
 ### Core Logical Functionality
