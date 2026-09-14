@@ -43,12 +43,10 @@ The display is driven by an ESP32 microcontroller, which is responsible for stre
 ### Core Logical Functionality
 
 <div align="center">
-  <img src="assets/sequence-diagram.png" alt="Image of UML Sequence Diagram" width="600" />
+  <img src="assets/sequence_diagram.png" alt="Image of UML Sequence Diagram" width="600" />
   <br />
   <sub><i>UML Sequence Diagram</i></sub>
 </div>
-
-![Image of Sequence Diagram]()
 
 ### API Access
 The basis of the project lies in interfacing with Spotify's APIs to receieve user data regarding their currently playing music. Every time the program begins running, and after a successful Wi-Fi connection is established, one of the first tasks to run is the retrieval of a new Access Token from Spotify's servers. As per the Spotify's requirements, Access Tokens are inherently ephemeral, expiring automatically every 3600 seconds (1 hour) regardless of scope. Thus, a function runs every 55 minutes to renew the Activation Token automatically, ensuring the display can be used for extended periods of time. 
