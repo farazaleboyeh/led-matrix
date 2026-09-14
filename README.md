@@ -16,15 +16,23 @@ The system works by first calling Spotify's APIs to fetch all data regarding the
 ### Core Physical Functionality
 The display is driven by an ESP32 microcontroller, which is responsible for streaming color data to the chained shift registers, among other tasks. Transistors are present along all rows which act as high-side power switches between the main power rail and the shared anodes, so that the (output-limited) shift registers are not solely responsible for driving entire rows themselves. 1kΩ current-limiting resistors are present along rows to protect the shift registers and LEDs from overheating & overcurrent, with per-color resistors along each column to finely tune color output (100Ω for red columns, 150Ω, green, & 220Ω blue). Images of the schematic, PCB design, & soldered board are all shown below for reference.
 
-![Image of KiCad Schematic](assets/schematic.png)
+<div align="center">
+  <img src="assets/schematic.png" alt="Image of KiCad Schematic" width="600" />
+  <br />
+  <sub><i>Schematic diagram, designed in KiCad.</i></sub>
+</div>
 
-*KiCad Schematic*
+<div align="center">
+  <img src="assets/pcb.png" alt="Image of KiCad PCB Layout" width="600" />
+  <br />
+  <sub><i>PCB layout, designed in KiCad.</i></sub>
+</div>
 
-![Image of KiCad PCB Layout](assets/pcb.png)
-
-*KiCad PCB Layout*
-
-![Image of Soldered PCB](assets/soldered.png)
+<div align="center">
+  <img src="assets/soldered.png" alt="Image of Soldered PCB" width="600" />
+  <br />
+  <sub><i>Soldered PCB, note that the breakout is still the missing screws and washers necessary for securing it to the board but is otherwise complete.</i></sub>
+</div>
 
 *Soldered PCB, note that the breakout is still missing the screws and washers intended to secure it to the board*
 
