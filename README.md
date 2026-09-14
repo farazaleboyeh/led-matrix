@@ -29,7 +29,7 @@ The basis of the project lies in interfacing with Spotify's APIs to receieve use
 There is not currently, however, any avenue for renewing the Refresh Tokens  automatically at the time of writing. Given they expire every 4 months, an implementation for such was not listed as high-enough priority but is in the works. 
 
 ### Interrupt-Driven Binary Code Modulation (BCM)
-Instead of standard PWM, the driver uses BCM driven by an ESP32 hardware timer. The matrix is scanned row-by-row, shifting 8 distinct bitplanes per row. Each bitplane's display time doubles (5µs, 10µs, 20µs, etc.), reconstructing 8-bit color depth visually while minimizing CPU load.
+Instead of standard PWM, which would demand an unsustainable 2,550 SPI updates per frame (10 rows x 255 steps) and cause severe CPU starvation, the driver implements Binary Code Modulation via the microcontroller's hardware timer. By shifting only 8 exponentially weighted bitplanes per row (5µs, 10µs, 20µs, etc.), BCM slashes bus traffic by 97% to just 80 updates per frame, reconstructing full 8-bit color depth through visual persistence while leaving the CPU free for WiFi and JPEG decoding.
 
 ### Double Buffering
 To prevent screen tearing during WiFi fetches or JPEG decoding: Operations draw to a back framebuffer (`draw_buffer`), `display.swap()` unpacks the back buffer into physical bitplanes (`bitplanes[10][8][5]`), & the ISR (`on_timer`) exclusively reads from the active bitplanes.
