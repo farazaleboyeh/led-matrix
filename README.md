@@ -96,4 +96,6 @@ Instead of standard PWM, which would demand an unsustainable 2,550 SPI updates p
 ### Double Buffering
 To prevent screen tearing during WiFi fetches or JPEG decoding: Operations draw to a back framebuffer (`draw_buffer`), `display.swap()` unpacks the back buffer into physical bitplanes (`bitplanes[10][8][5]`), & the ISR (`on_timer`) exclusively reads from the active bitplanes.
 
+##Project Objective
+
 
