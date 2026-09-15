@@ -7,14 +7,14 @@ Repository includes the firmwmare used to show the artwork of a currently stream
     <tr>
       <td align="center">
         <a href="assets/demo1.jpeg">
-          <img src="assets/demo1.jpeg" alt="Test width="300" />
+          <img src="assets/demo1.jpeg" alt="Example Image 1" />
         </a>
         <br />
         <sub><em>Example 1, raw LEDs exposed.</em></sub>
       </td>
       <td align="center">
         <a href="assets/demo5.jpeg">
-          <img src="assets/demo5.jpeg" alt="Test width="300" />
+          <img src="assets/demo5.jpeg" alt="Example Image 2" />
         </a>
         <br />
         <sub><em>Example 2, raw LEDs exposed.</em></sub>
@@ -23,14 +23,14 @@ Repository includes the firmwmare used to show the artwork of a currently stream
     <tr>
       <td align="center">
         <a href="assets/demo4.jpeg">
-          <img src="assets/demo4.jpeg" alt="Test width="300" />
+          <img src="assets/demo4.jpeg" alt="Example Image 3" />
         </a>
         <br />
         <sub><em>Example 3, makeshift diffuser overlayed. </em></sub>
       </td>
       <td align="center">
       <a href="assets/demo2.jpeg">
-          <img src="assets/demo2.jpeg" alt="Test width="300" />
+          <img src="assets/demo2.jpeg" alt="Example Image 4" />
         </a>
         <br />
         <sub><em>Example 4, makeshift diffuser overlayed.</em></sub>
@@ -95,3 +95,5 @@ Instead of standard PWM, which would demand an unsustainable 2,550 SPI updates p
 
 ### Double Buffering
 To prevent screen tearing during WiFi fetches or JPEG decoding: Operations draw to a back framebuffer (`draw_buffer`), `display.swap()` unpacks the back buffer into physical bitplanes (`bitplanes[10][8][5]`), & the ISR (`on_timer`) exclusively reads from the active bitplanes.
+
+
