@@ -10,14 +10,14 @@ Repository includes the firmwmare used to show the artwork of a currently stream
           <img src="assets/demo1.jpeg" alt="Test width="300" />
         </a>
         <br />
-        <sub><em>Example 1, raw LEDs exposed</em></sub>
+        <sub><em>Example 1, raw LEDs exposed.</em></sub>
       </td>
       <td align="center">
         <a href="assets/demo5.jpeg">
           <img src="assets/demo5.jpeg" alt="Test width="300" />
         </a>
         <br />
-        <sub><em>Example 2, raw LEDs exposed</em></sub>
+        <sub><em>Example 2, raw LEDs exposed.</em></sub>
       </td>
     </tr>
     <tr>
