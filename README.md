@@ -1,6 +1,43 @@
 # Custom-Built Music Display
 
-Repository includes the firmwmare used to show the artwork of a currently streaming song from Spotify onto a custom-built 10x10 display, as well as all primary KiCad project files used to design the display itself. 
+Repository includes the firmwmare used to show the artwork of a currently streaming song from Spotify onto a custom-built 10x10 display, as well as all primary KiCad project files used to design the display itself. A demo of the display in its most recent state is available below.
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <a href="assets/demo1.jpeg">
+          <img src="assets/demo1.jpeg" alt="Test width="300" />
+        </a>
+        <br />
+        <sub><em>Test</em></sub>
+      </td>
+      <td align="center">
+        <a href="assets/demo1.jpeg">
+          <img src="assets/demo1.jpeg" alt="Test width="300" />
+        </a>
+        <br />
+        <sub><em>Test</em></sub>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <a href="assets/demo1.jpeg">
+          <img src="assets/demo1.jpeg" alt="Test width="300" />
+        </a>
+        <br />
+        <sub><em>Test</em></sub>
+      </td>
+      <td align="center">
+      <a href="assets/demo1.jpeg">
+          <img src="assets/demo1.jpeg" alt="Test width="300" />
+        </a>
+        <br />
+        <sub><em>Test</em></sub>
+      </td>
+    </tr>
+  </table>
+</div>
 
 The system works by first calling Spotify's APIs to fetch all data regarding the user's playing music. From the given information, a link to the  album art is then used to store all JPEG data (as a stream of bytes) to an internal buffer. The TJpg Decoder library is used to decode the buffer as RGB565 data, which perpetually reaches out to a separate callback function, which converts again to RGB888 and also write to the display's back framebuffer. When the front and back framebuffers are swapped, a continuously firing interrupt displays the artwork by streaming the bitplanes (sequentially by time slice and physical row), to the display's shift registers. 
 
