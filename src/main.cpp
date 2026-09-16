@@ -7,6 +7,17 @@ WiFiMulti wifiMulti;
 volatile int current_row = 0;
 volatile int current_bit = 0;
 
+unsigned long last_spotify_check = 0;
+const unsigned long SPOTIFY_POLL_INTERVAL = 2000;
+
+RGB old_art[100];
+RGB incoming_art[100];
+
+bool is_transitioning = false;
+int transition_offset = 0;
+unsigned long last_transition_step_time = 0;
+const unsigned long TRANSITION_STEP_INTERVAL = 40;
+
 void IRAM_ATTR on_timer()
 {
   uint8_t *frame_data = display.bitplanes[current_row][current_bit];
@@ -46,11 +57,64 @@ bool tjpg_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap)
         uint8_t g = ((color >> 5)  & 0x3F) << 2;
         uint8_t b = (color & 0x1F) << 3;
 
-        display.set_pixel(px, py, r, g, b);
+        
+        incoming_art[py * 10 + px] = {r, g, b};
+
+        // display.set_pixel(px, py, r, g, b);
       }
     }
   }
   return 1;
+}
+
+void trigger_slide_transition()
+{
+  memcpy(old_art, display.get_show_buffer(), sizeof(old_art));
+
+  transition_offset = 1; // Start shifting at column 1
+  last_transition_step_time = millis();
+  is_transitioning = true;
+}
+
+void update_slide_transition()
+{
+  if (!is_transitioning) return;
+
+  if (millis() - last_transition_step_time >= TRANSITION_STEP_INTERVAL)
+  {
+    last_transition_step_time = millis();
+
+    display.clear();
+    const RGB *active_frame = display.get_show_buffer();
+
+    for (int y = 0; y < 10; y++)
+    {
+      for (int x = 0; x < 10; x++)
+      {
+        RGB p;
+        if (x + transition_offset < 10)
+        {
+          // Pull directly from currently displayed frame!
+          p = active_frame[y * 10 + (x + transition_offset)];
+        }
+        else
+        {
+          // Pull from incoming staging buffer
+          p = incoming_art[y * 10 + (x + transition_offset - 10)];
+        }
+        display.set_pixel(x, y, p.r, p.g, p.b);
+      }
+    }
+
+    display.swap();
+
+    transition_offset++;
+    if (transition_offset > 10)
+    {
+      is_transitioning = false;
+      transition_offset = 0;
+    }
+  }
 }
 
 void setup()
@@ -85,12 +149,11 @@ void setup()
   display.swap();
 }
 
-unsigned long last_spotify_check = 0;
-const unsigned long SPOTIFY_POLL_INTERVAL = 2000;
-
 void loop()
 {
-  if (millis() - last_spotify_check >= SPOTIFY_POLL_INTERVAL)
+  update_slide_transition();
+
+  if (!is_transitioning && (millis() - last_spotify_check >= SPOTIFY_POLL_INTERVAL))
   {
     last_spotify_check = millis();
 

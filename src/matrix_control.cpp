@@ -11,11 +11,6 @@ void MatrixDriver::begin()
 {
     digitalWrite(latchp, LOW);
 
-    // #ifdef oep
-    // pinMode(oep, OUTPUT);
-    // digitalWrite(oep, HIGH);
-    // #endif
-
     SPI.begin(clockp, -1, datap, -1);
 
     memset(draw_buffer, 0, NUM_PIXELS * sizeof(RGB));
@@ -24,10 +19,6 @@ void MatrixDriver::begin()
 
     static const uint8_t blank[5] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     shift_and_latch(blank, 5);
-
-    // #ifdef oep
-    //     digitalWrite(oep, LOW); // Enable outputs now that registers are zeroed
-    // #endif
 }
 
 void MatrixDriver::clear()
@@ -43,12 +34,6 @@ void MatrixDriver::set_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b)
     }
     int index = (y * WIDTH) + x;
     draw_buffer[index] = {r, g, b};
-
-    // Serial.println(index);
-    // Serial.println(std::bitset<8>(r).to_string().c_str());
-    // Serial.println(std::bitset<8>(g).to_string().c_str());
-    // Serial.println(std::bitset<8>(b).to_string().c_str());
-    // Serial.println("---");
 }
 
 void MatrixDriver::scan(uint32_t duration_ms)
@@ -89,24 +74,18 @@ void MatrixDriver::unpack_bitplanes()
                 if (p.r & (1 << bit))
                 {
                     bitplanes[y][bit][loc.r.byte_idx] &= ~(1 << loc.r.bit);
-                    
                 }
-
                 if (p.g & (1 << bit))
                 {
                     bitplanes[y][bit][loc.g.byte_idx] &= ~(1 << loc.g.bit);
                 }
-
                 if (p.b & (1 << bit))
                 {
                     bitplanes[y][bit][loc.b.byte_idx] &= ~(1 << loc.b.bit);
                 }
             }
             const RowLocation &rloc = ROW_MAP[y];
-            // Serial.println(std::bitset<8>(bitplanes[y][bit][rloc.byte_idx]).to_string().c_str());
             bitplanes[y][bit][rloc.byte_idx] &= ~(1 << rloc.bit);
-            // Serial.println(std::bitset<8>(bitplanes[y][bit][rloc.byte_idx]).to_string().c_str());
-            // Serial.println("---");
         }
     }
 }
@@ -132,6 +111,11 @@ void MatrixDriver::shift_and_latch(const uint8_t *data, size_t len)
 
     digitalWrite(latchp, HIGH);
     digitalWrite(latchp, LOW);
+}
+
+const RGB* MatrixDriver::get_show_buffer() const 
+{ 
+    return show_buffer; 
 }
 
 int MatrixDriver::get_HEIGHT()

@@ -51,7 +51,7 @@ private:
     static const int WIDTH = 10;
     static const int HEIGHT = 10;
     static const int NUM_PIXELS = WIDTH * HEIGHT;
-    static const int SHIFT_REGISTERS = 5;
+    static const int SHIFT_REGISTERS = ((WIDTH * 3) + HEIGHT) / 8;
 
     RGB framebuffer_a[NUM_PIXELS];
     RGB framebuffer_b[NUM_PIXELS];
@@ -61,6 +61,8 @@ private:
 
 public:
     uint8_t bitplanes[HEIGHT][8][SHIFT_REGISTERS];
+    RGB *target_art_buffer;
+
     MatrixDriver();
     void begin();
     void clear();
@@ -69,7 +71,10 @@ public:
     void swap();
     void unpack_bitplanes();
     void shift_and_latch(const uint8_t *data, size_t len);
-    int get_HEIGHT();
+
+    const RGB* get_show_buffer() const;
+
+    int get_HEIGHT(); //lowkirkenuinely i think these are useless given they're read only, so figure out later
     int get_WIDTH();
 };
 
