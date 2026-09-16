@@ -43,7 +43,7 @@ Repository includes the firmwmare used to show the artwork of a currently stream
   </table>
 </div>
 
-The system works by first calling Spotify's APIs to fetch all data regarding the user's playing music. From the given information, a link to the  album art is then used to store all JPEG data (as a stream of bytes) to an internal buffer. The TJpg Decoder library is used to decode the buffer as RGB565 data, which perpetually reaches out to a separate callback function, which converts again to RGB888 and also write to the display's back framebuffer. When the front and back framebuffers are swapped, a continuously firing interrupt displays the artwork by streaming the bitplanes (sequentially by time slice and physical row), to the display's shift registers. 
+The system works by first calling Spotify's APIs to fetch all data regarding the user's playing music. From the given information, a link to the  album art is then used to store all JPEG data (as a stream of bytes) to an internal buffer. The TJpg Decoder library is used to decode the buffer as RGB565 data (locally), which perpetually reaches out to a separate callback function, which converts again to RGB888 and also write to the display's back framebuffer. When the front and back framebuffers are swapped, a continuously firing interrupt displays the artwork by streaming the bitplanes (sequentially by time slice and physical row), to the display's shift registers. 
 
 ## Hardware 
 ### Comprehensive Component List
