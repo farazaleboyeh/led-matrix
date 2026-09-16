@@ -1,7 +1,7 @@
 # Custom-Built Music Display
 
 ## Goal
-The purpose of this project has been to extend my skills as a hardware engineer, specifically in regards to the development of embedded systems. In doing so, I challenged myself to build a complete system from the ground up, that encompasses the entire development lifecycle. From schematic design and PCB layout in KiCad, to writing efficient C++ firmware for Wi-Fi networking, memory management, & custom LED multiplexing.
+The purpose of this project has been to extend my skills as a hardware engineer, specifically in regards to the development of embedded systems. In doing so, I challenged myself to build a complete system from scratch that encompasses the entire development lifecycle. From schematic design and PCB layout in KiCad, to writing efficient C++ firmware for Wi-Fi networking, memory management, & custom LED multiplexing.
 
 ## Overview
 Repository includes the firmwmare used to show the artwork of a currently streaming song from Spotify onto a custom-built 10x10 display, as well as all primary KiCad project files used to design the system itself. Some examples images of the display in its most recent state are available below.
