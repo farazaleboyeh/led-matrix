@@ -1,6 +1,6 @@
 # Custom-Built Music Display
 
-Repository includes the firmwmare used to show the artwork of a currently streaming song from Spotify onto a custom-built 10x10 display, as well as all primary KiCad project files used to design the system itself. A demo of the display in its most recent state is available below.
+Repository includes the firmwmare used to show the artwork of a currently streaming song from Spotify onto a custom-built 10x10 display, as well as all primary KiCad project files used to design the system itself. Some examples images of the display in its most recent state are available below.
 
 <div align="center">
   <table>
