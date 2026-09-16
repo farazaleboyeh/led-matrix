@@ -109,6 +109,6 @@ A list of the main tasks in progress for this project:
 A non-exhaustive list of ideas for future iterations of this project:
 * LEDs & all other display hardware sitting on separate PCBs
 * Playback controls (buttons, or other sensors for touchless playback)
-* Transition firmware from the Arduino framework to ESP-IDF with FreeRTOS
+* Transition firmware from Arduino framework to ESP-IDF with FreeRTOS
 
 
