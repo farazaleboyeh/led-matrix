@@ -101,7 +101,14 @@ Instead of standard PWM, which would demand an unsustainable 2,550 SPI updates p
 To prevent screen tearing during WiFi fetches or JPEG decoding: Operations draw to a back framebuffer (`draw_buffer`), `display.swap()` unpacks the back buffer into physical bitplanes (`bitplanes[10][8][5]`), & the ISR (`on_timer`) exclusively reads from the active bitplanes.
 
 ## Progress
+A list of the main tasks in progress for this project:
+* Upscaling the 8x8 artwork to 10x10
+* Implementing animated song transitions
+* Designing and 3D printing an enlosure and diffuser
 
-ss
+A non-exhaustive list of ideas for future iterations of this project:
+* LEDs & all other display hardware sitting on separate PCBs
+* Playback controls (buttons, or other sensors for touchless playback)
+* Transition firmware from the Arduino framework to ESP-IDF with FreeRTOS
 
 
